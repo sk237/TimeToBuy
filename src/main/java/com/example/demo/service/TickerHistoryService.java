@@ -43,8 +43,8 @@ public class TickerHistoryService {
 
     // This method take in Ticker's symbol String and response from third-party stock data api.
     // Then, this method calculate average price based on today's query.
-    // The response must contain stock's high prices and low prices for the last 180 days.
-    // For the stocks that don't have 180 days of data, at least a day of historical data should be given.
+    // The response must contain stock's high prices and low prices for the last 60 days.
+    // For the stocks that don't have 60 days of data, at least a day of historical data should be given.
     protected TickerHistory findAverageTickerPrice(String tickerSymbol, TickerHistoryResponse TickerHistoryResponse) {
         if (TickerHistoryResponse.getStatus().equals("no_data"))
             throw new TickerNotFoundException();
