@@ -62,13 +62,22 @@ public class TickerHistoryServiceTest {
     }
 
     @Test(expected = NotEnoughTickerHistoryException.class)
-    public void findTickerHistoryInfo_withSingleData_shouldThrowNotEnoughTickerHistoryException() {
+    public void findTickerHistoryInfo_withEmptyData_shouldThrowNotEnoughTickerHistoryException() {
         TickerHistoryResponse tickerHistoryResponse = new TickerHistoryResponse();
         tickerHistoryResponse.setStatus("ok");
         tickerHistoryResponse.setHigh(Collections.emptyList());
         tickerHistoryService.findAverageTickerPrice(tickerSymbol, tickerHistoryResponse);
     }
 
+    @Test
+    public void findTickerHistoryInfo_withData_shouldThrowNotEnoughTickerHistoryException() {
+        TickerHistoryResponse tickerHistoryResponse = new TickerHistoryResponse();
+        tickerHistoryResponse.setStatus("ok");
+        tickerHistoryResponse.setHigh(List.of(3f, 3f, 3f, 3f));
+        tickerHistoryResponse.setLow(List.of(1f, 1f, 1f, 1f));
+        TickerHistory tickerHistory = tickerHistoryService.findAverageTickerPrice(tickerSymbol, tickerHistoryResponse);
+        Assert.assertEquals(2f, tickerHistory.getAvgPrice(), DELTA);
+    }
 
     @Test
     public void getTickerHistory_withOptionalData_shouldNotThrowNoSuchElementException() {
