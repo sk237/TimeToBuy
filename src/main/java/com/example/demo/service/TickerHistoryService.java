@@ -57,7 +57,7 @@ public class TickerHistoryService {
         List<Float> highList = TickerHistoryResponse.getHigh();
         List<Float> lowList = TickerHistoryResponse.getLow();
         int candleSize = lowList.size();
-        float totalSum = 0, upperBound = 0, lowerBound = 0, avg = 0;
+        float totalSum = 0, avg = 0;
         float[] pricePrediction = linearRegression(highList, lowList, candleSize);
 
         for (int i = 0; i < candleSize; i++) {
@@ -71,8 +71,8 @@ public class TickerHistoryService {
                 lowerList.add(low);
         }
 
-        upperBound = getBound(upperList, upperBound);
-        lowerBound = getBound(lowerList, lowerBound);
+        float upperBound = getBound(upperList);
+        float lowerBound = getBound(lowerList);
 
         return new TickerHistory(tickerSymbol, avg, upperBound, lowerBound);
     }
@@ -96,7 +96,6 @@ public class TickerHistoryService {
 
     private float getSlope(float[] prices) {
         int n = prices.length;
-        float numerator = 0, denominator = 0;
         float sigmaXY = 0, sigmaX = 0, sigmaY = 0, sigmaXX = 0;
 
         for (int i = 0; i < n; i++) {
@@ -106,14 +105,13 @@ public class TickerHistoryService {
             sigmaY += prices[i];
         }
 
-        numerator = n * sigmaXY - sigmaX * sigmaY;
-        denominator = n * sigmaXX - sigmaX * sigmaX;
+        float numerator = n * sigmaXY - sigmaX * sigmaY;
+        float denominator = n * sigmaXX - sigmaX * sigmaX;
         return numerator / denominator;
     }
 
     private float getYIntercept(float[] prices, float a) {
         int n = prices.length;
-        float numerator = 0, denominator = 0;
         float sigmaX = 0, sigmaY = 0;
 
         for (int i = 0; i < n; i++) {
@@ -121,16 +119,16 @@ public class TickerHistoryService {
             sigmaY += prices[i];
         }
 
-        numerator = sigmaY - a * sigmaX;
-        denominator = n;
+        float numerator = sigmaY - a * sigmaX;
+        float denominator = n;
         return numerator / denominator;
     }
 
-    private float getBound(List<Float> upperBoundList, float upperBound) {
+    private float getBound(List<Float> upperBoundList) {
+        float bound = 0;
         for (float price : upperBoundList)
-            upperBound += price;
-        upperBound /= upperBoundList.size();
-        return upperBound;
+            bound += price;
+        return bound /  upperBoundList.size();
     }
 
 
