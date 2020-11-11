@@ -81,7 +81,7 @@ public class TickerHistoryServiceTest {
 
     @Test
     public void getTickerHistory_withOptionalData_shouldNotThrowNoSuchElementException() {
-        TickerHistory expected = new TickerHistory(tickerSymbol, System.currentTimeMillis());
+        TickerHistory expected = new TickerHistory(tickerSymbol, 1f, 2f, 0);
         when(tickerHistoryRepository.findBySymbolAndDate(tickerSymbol, today))
                 .thenReturn(Optional.of(expected));
 

@@ -39,7 +39,7 @@ public class MainControllerTest {
     @Test
     void getTickerDatatTest() throws Exception {
         String tickerSymbol = "AAPL";
-        TickerHistory tickerHistory = new TickerHistory(tickerSymbol, System.currentTimeMillis());
+        TickerHistory tickerHistory = new TickerHistory(tickerSymbol, 0, 0, 0);
         when(tickerHistoryService.getTickerDataInfo(tickerSymbol))
                 .thenReturn(tickerHistory);
 

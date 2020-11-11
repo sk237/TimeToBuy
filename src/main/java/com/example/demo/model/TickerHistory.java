@@ -2,7 +2,6 @@ package com.example.demo.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.Entity;
@@ -10,7 +9,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.util.Currency;
 
 @Getter
 @Entity
@@ -26,10 +24,15 @@ public class TickerHistory {
     private float avgPrice;
     private float currentPrice;
     private boolean timeToBuy;
-    public TickerHistory(String symbol, float avgPrice) {
+    private float upperBound;
+    private float lowerBound;
+
+    public TickerHistory(String symbol, float avgPrice, float upperBound, float lowerBound) {
         this.symbol = symbol;
         this.date = Timestamp.valueOf(LocalDate.now().atStartOfDay());
         this.avgPrice = avgPrice;
+        this.upperBound = upperBound;
+        this.lowerBound = lowerBound;
     }
 
     public void setCurrentPrice(float currentPrice) {

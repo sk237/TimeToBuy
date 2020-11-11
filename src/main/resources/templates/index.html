@@ -6,15 +6,20 @@
 </head>
 <body>
     <form action="/postTickerData" method="post">
-        Ticker Symbol : <input type="text" name="tickerSymbol">
+        Ticker Symbol : <label>
+        <input type="text" name="tickerSymbol">
+    </label>
         <input type="submit" value="find"><br><br>
     </form>
 
     <th:block th:if = "${tickerCostInfo != null}">
         Today         : <li th:text="${tickerCostInfo.date}"></li>
         Ticker Symbol : <li th:text="${tickerCostInfo.symbol}"></li>
+        Upper Bound    : <li th:text="${tickerCostInfo.upperBound}"></li>
+        Lower Bound    : <li th:text="${tickerCostInfo.lowerBound}"></li>
         Avg Price    : <li th:text="${tickerCostInfo.avgPrice}"></li>
         Current Price  : <li th:text="${tickerCostInfo.currentPrice}"></li>
+
         Time to buy?  :
         <td th:if = "${tickerCostInfo.timeToBuy}">
             <li>Yes</li>
