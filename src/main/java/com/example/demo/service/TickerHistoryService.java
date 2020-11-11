@@ -52,34 +52,88 @@ public class TickerHistoryService {
         if (TickerHistoryResponse.getHigh().size() < 1)
             throw new NotEnoughTickerHistoryException();
 
+        List<Float> upperList = new ArrayList<>();
+        List<Float> lowerList = new ArrayList<>();
         List<Float> highList = TickerHistoryResponse.getHigh();
         List<Float> lowList = TickerHistoryResponse.getLow();
-        List<Float> upperBoundList = new ArrayList<>();
-        List<Float> lowerBoundList = new ArrayList<>();
-        float totalSum = 0, upperBound = 0, lowerBound = 0, avg = 0;
         int candleSize = lowList.size();
+        float totalSum = 0, upperBound = 0, lowerBound = 0, avg = 0;
+        float[] pricePrediction = linearRegression(highList, lowList, candleSize);
 
         for (int i = 0; i < candleSize; i++) {
             float high = highList.get(i);
             float low = lowList.get(i);
             totalSum += (high - low) / 2 + low;
             avg = totalSum / (i + 1);
-            if (high > avg)
-                upperBoundList.add(high);
-            if (low < avg)
-                lowerBoundList.add(low);
+            if (high > pricePrediction[i])
+                upperList.add(high);
+            if (low < pricePrediction[i])
+                lowerList.add(low);
         }
 
-        for (float price : upperBoundList)
-            upperBound += price;
-        upperBound /= upperBoundList.size();
-
-        for (float price : lowerBoundList)
-            lowerBound += price;
-        lowerBound /= lowerBoundList.size();
+        upperBound = getBound(upperList, upperBound);
+        lowerBound = getBound(lowerList, lowerBound);
 
         return new TickerHistory(tickerSymbol, avg, upperBound, lowerBound);
     }
+
+    protected float[] linearRegression(List<Float> highList, List<Float> lowList, int size) {
+        float[] prices = new float[size];
+        float[] pricePrediction = new float[size];
+        for (int i = 0; i < size; i++) {
+            float high = highList.get(i);
+            float low = lowList.get(i);
+            prices[i] = (high - low) / 2 + low;
+        }
+
+        float a = getSlope(prices);
+        float b = getYIntercept(prices, a);
+        for (int i = 0; i < size; i++)
+            pricePrediction[i] = a * i + b;
+
+        return pricePrediction;
+    }
+
+    private float getSlope(float[] prices) {
+        int n = prices.length;
+        float numerator = 0, denominator = 0;
+        float sigmaXY = 0, sigmaX = 0, sigmaY = 0, sigmaXX = 0;
+
+        for (int i = 0; i < n; i++) {
+            sigmaXY += (i + 1) * prices[i];
+            sigmaXX += (i + 1) * (i + 1);
+            sigmaX += (i + 1);
+            sigmaY += prices[i];
+        }
+
+        numerator = n * sigmaXY - sigmaX * sigmaY;
+        denominator = n * sigmaXX - sigmaX * sigmaX;
+        return numerator / denominator;
+    }
+
+    private float getYIntercept(float[] prices, float a) {
+        int n = prices.length;
+        float numerator = 0, denominator = 0;
+        float sigmaX = 0, sigmaY = 0;
+
+        for (int i = 0; i < n; i++) {
+            sigmaX += i + 1;
+            sigmaY += prices[i];
+        }
+
+        numerator = sigmaY - a * sigmaX;
+        denominator = n;
+        return numerator / denominator;
+    }
+
+    private float getBound(List<Float> upperBoundList, float upperBound) {
+        for (float price : upperBoundList)
+            upperBound += price;
+        upperBound /= upperBoundList.size();
+        return upperBound;
+    }
+
+
 
     public TickerHistory getTickerDataInfo(String tickerSymbol) {
         Timestamp today = Timestamp.valueOf(LocalDate.now().atStartOfDay());

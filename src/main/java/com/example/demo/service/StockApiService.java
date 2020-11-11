@@ -29,7 +29,7 @@ public class StockApiService {
     public TickerHistoryResponse getTickerHistory(String tickerSymbol) {
         long currentTimeMillis = System.currentTimeMillis(), sixtyDayByMillis = 5184000L;
         long end = currentTimeMillis / 1000;
-        long start = end - sixtyDayByMillis * 2;
+        long start = end - sixtyDayByMillis;
         URI uri = URI.create("https://finnhub.io/api/v1/stock/candle?symbol=" + tickerSymbol
                 + "&resolution=D&from=" + start + "&to=" + end + "&token=" + apiKey);
         ResponseEntity<TickerHistoryResponse> res = restTemplate.getForEntity(uri, TickerHistoryResponse.class);
